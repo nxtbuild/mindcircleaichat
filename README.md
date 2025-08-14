@@ -61,6 +61,8 @@ cd Persona-ai
 
 npm install
 
+**Define VITE_OPENAI_API_KEY in .env file and paste your OpenAI Key**
+
 npm run dev
 ```
 
