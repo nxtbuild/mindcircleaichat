@@ -231,10 +231,18 @@ const Index = () => {
                 className="flex gap-2 sticky bottom-0 z-10 border-b border-dark-100 bg-dark-400/80 
               backdrop-blur-md p-4"
               >
+                <span className="absolute bottom-[4rem] right-30 text-xs text-muted-foreground">
+                  {inputMessage.length}/1000
+                </span>
                 <Input
                   placeholder="Type your message..."
                   value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 1000) {
+                      setInputMessage(value);
+                    }
+                  }}
                   onKeyDown={(e) =>
                     e.key === "Enter" && !e.shiftKey && handleSendMessage()
                   }
