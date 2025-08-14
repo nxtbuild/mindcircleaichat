@@ -1,4 +1,4 @@
-import { openaiClient, geminiClient } from "@/utils/aiClients";
+import { openaiClient } from "@/utils/aiClients";
 import { type Persona, personas } from "@/data/personas";
 
 type PersonalityTone = "default" | "funny" | "advice" | "educational";

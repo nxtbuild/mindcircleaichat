@@ -63,7 +63,7 @@
   }
 
   .user-message {
-    @apply message-bubble bg-orange-500 text-white ml-auto;
+    @apply message-bubble bg-orange-500 text-white ml-auto max-w-[100%];
   }
 
   .ai-message {

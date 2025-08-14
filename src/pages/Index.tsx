@@ -130,6 +130,13 @@ const Index = () => {
     }
   };
 
+  const messageTemplates = [
+    "Show me a React component example",
+    "Write a JavaScript function for API calls",
+    "How do I use useEffect in React?",
+    "Explain closures in JavaScript",
+  ];
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-dark-500">
       {/* Left Sidebar - Persona List */}
@@ -180,10 +187,18 @@ const Index = () => {
                 d="M12 11c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm0 0c0 2.2-1.8 4-4 4H6v3l-4-4 4-4v3h2c1.1 0 2-.9 2-2zm0-6h4v3l4-4-4-4v3h-4v2z"
               />
             </svg>
+
+            <h1 className="text-5xl font-bold text-orange-500 mb-5 lucide lucide-coffee  mx-auto animate-pulse">
+              Welcome to MindCircle AI
+            </h1>
+            <h2 className="text-lg font-semibold text-white mb-10">
+              Connect with Preferred AI assistant to get personalized
+              conversions.
+            </h2>
             <h2 className="text-lg font-semibold text-white">
               No persona selected
             </h2>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-md text-gray-400 mt-2">
               Please select a persona from the left panel to start chatting.
             </p>
           </div>

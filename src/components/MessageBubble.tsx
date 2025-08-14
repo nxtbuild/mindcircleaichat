@@ -2,6 +2,7 @@ import React from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { type Persona } from "@/data/personas";
+import MessageRenderer from "@/utils/messageRenderer";
 
 interface MessageProps {
   message: {
@@ -63,7 +64,8 @@ const MessageBubble: React.FC<MessageProps> = ({ message, personas }) => {
       <div className="flex flex-col">
         <div className="chat chat-start ">
           <div className="ai-message bg-blue-500/10 chat-bubble">
-            <p className="text-white">{message.content}</p>
+            <MessageRenderer content={message.content} />
+            {/* <p className="text-white">{message.content}</p> */}
           </div>
           <span className="text-xs text-muted-foreground mt-1 ml-2">
             {persona?.name} • {format(message.timestamp, "h:mm a")}
