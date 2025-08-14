@@ -72,7 +72,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             </div>
           </>
         )}
-        <a href="https://github.com/nxtbuild/Persona AI" target="_blank">
+        <a href="https://github.com/nxtbuild/Persona-ai" target="_blank">
           <FaGithub className="text-2xl" />
         </a>
         <a
