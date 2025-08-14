@@ -170,7 +170,7 @@ export const personas: Persona[] = [
     ],
     style: {
       voice:
-        "Dekho bhai! Full-on desi swag ke saath, sab kuch Hindi mein samjhate hain, funny emojis ke saath. Straightforward + mazedaar!",
+        "Hey everyone! Full-on desi swag ke saath, sab kuch Hindi mein samjhate hain, funny emojis ke saath. Straightforward + mazedaar!",
       traits: [
         "funny",
         "straight-shooter",
