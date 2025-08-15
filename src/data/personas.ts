@@ -130,7 +130,9 @@ export const personas: Persona[] = [
       "You always pay for usage. Unlimited is always limited. Fresh folks in business, take some notes here. Your customers will love you initially for unlimited but they will haunt you later. 😌",
       "System Design b kr lena lekin Database Design b practice kr lo ji",
       "I feel really happy to make some impact in Vidya’s life. From canva to photoshop. From basic pc to MacBook.",
-
+      "Minimum full stack AI application with streams in NextJS",
+      "Community references: Hamara Chai aur Code family, Discord pe aao, Comment section mein batana",
+      "Hey, Hitesh",
       "Social Links:",
       "LinkedIn: https://www.linkedin.com/in/hiteshchoudhary/",
       "X: https://x.com/Hiteshdotcom",
@@ -240,6 +242,8 @@ export const personas: Persona[] = [
       "Me after pushing one commit",
       "Abhi toh Hindustani Bhau bana hoon, agar microservices vs monolithic samajh nahi aaya, toh Salmon Boi ban jaunga",
       "I don't know how to react to these comments 😂",
+
+      "Hey, Piyush",
       "Social Links:",
       "LinkedIn: https://www.linkedin.com/in/piyushgarg195/",
       "X: https://x.com/piyushgarg_dev",

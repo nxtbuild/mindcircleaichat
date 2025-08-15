@@ -1,20 +1,16 @@
 import React from "react";
 import { Avatar, AvatarGroup } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { type Persona } from "@/data/personas";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 
 interface ChatHeaderProps {
   activePersonas: Persona[];
   isSelectionView: boolean;
-  onBackClick: () => void;
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   activePersonas,
   isSelectionView,
-  onBackClick,
 }) => {
   return (
     <header className="sticky top-0 z-10 border-b border-dark-100 bg-dark-400/80 backdrop-blur-md p-4">
@@ -23,13 +19,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           <h1 className="text-xl font-bold text-white">MindCircle</h1>
         ) : (
           <>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onBackClick}
-              className="mr-2 text-muted-foreground hover:text-white hover:bg-dark-300"
-            ></Button>
-
             <div className="flex items-center gap-3 flex-1">
               {activePersonas.length === 1 ? (
                 <>
@@ -39,7 +28,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                       alt={activePersonas[0].name}
                     />
                   </Avatar>
-                  <span className="font-medium">{activePersonas[0].name}</span>
+                  <span className="font-medium">
+                    {activePersonas[0].name} ({activePersonas[0].title})
+                  </span>
                 </>
               ) : activePersonas.length > 1 ? (
                 <>

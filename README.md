@@ -75,3 +75,5 @@ Add new personas in data in personas.ts
 - Choose your Preferred persona
 - According to selection it's send message
 - Than your can send message by typing
+
+## Demo Link: https://persona-ai-three-eta.vercel.app/

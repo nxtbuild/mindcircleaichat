@@ -19,7 +19,7 @@ import ChatHeader from "@/components/ChatHeader";
 type PersonalityTone = "default" | "funny" | "advice" | "educational";
 
 const Index = () => {
-  const [activePersonas, setActivePersonas] = useState<Persona[]>([]);
+  const [activePersona, setActivePersona] = useState<Persona | null>(null);
   const [messages, setMessages] = useState<
     { id: string; content: string; sender: string; timestamp: Date }[]
   >([]);
@@ -42,63 +42,36 @@ const Index = () => {
   };
 
   const handlePersonaSelect = async (persona: Persona) => {
-    let updated;
-    if (activePersonas.find((p) => p.id === persona.id)) {
-      updated = activePersonas.filter((p) => p.id !== persona.id);
-    } else {
-      updated = [...activePersonas, persona];
-    }
-    setActivePersonas(updated);
+    const isSame = activePersona?.id === persona.id;
+    const updated = isSame ? null : persona;
+    setActivePersona(updated);
+    setMessages([]);
 
-    if (updated.length > 0) {
-      setMessages([]); // Clear previous chat
+    if (updated) {
       startChat(updated);
-    } else {
-      setMessages([]);
     }
   };
 
-  const startChat = async (selectedPersonas: Persona[]) => {
+  const startChat = async (persona: Persona) => {
     setIsLoading(true);
     try {
-      if (selectedPersonas.length === 1) {
-        const response = await generateAIResponse(
-          "Say hello and introduce yourself briefly",
-          [selectedPersonas[0]],
-          temperature,
-          personalityTone
-        );
-        addMessage(response as string, selectedPersonas[0].id);
-      } else {
-        const responses = (await generateAIResponse(
-          "Say hello and introduce yourself briefly",
-          selectedPersonas,
-          temperature,
-          personalityTone
-        )) as Record<string, string>;
-
-        const shuffledIds = Object.keys(responses).sort(
-          () => Math.random() - 0.5
-        );
-        shuffledIds.forEach((id, index) => {
-          setTimeout(() => {
-            addMessage(responses[id], id);
-          }, index * 1000);
-        });
-      }
+      const response = await generateAIResponse(
+        "Say hello and introduce yourself briefly",
+        [persona],
+        temperature,
+        personalityTone
+      );
+      addMessage(response as string, persona.id);
     } catch (err) {
       console.error("Error getting welcome message:", err);
-      addMessage(
-        "Hello! How can I help you today?",
-        selectedPersonas[0]?.id || "system"
-      );
+      addMessage("Hello! How can I help you today?", persona.id);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+    if (!inputMessage.trim() || isLoading || !activePersona) return;
     addMessage(inputMessage, "user");
     const sentMessage = inputMessage;
     setInputMessage("");
@@ -107,21 +80,15 @@ const Index = () => {
     try {
       const response = await generateAIResponse(
         sentMessage,
-        activePersonas,
+        [activePersona],
         temperature,
         personalityTone
       );
 
-      if (typeof response === "string") {
-        addMessage(response, activePersonas[0].id);
-      } else {
-        const ids = Object.keys(response).sort(() => Math.random() - 0.5);
-        ids.forEach((id, index) => {
-          setTimeout(() => {
-            addMessage(response[id], id);
-          }, index * 1200);
-        });
-      }
+      addMessage(
+        typeof response === "string" ? response : response[activePersona.id],
+        activePersona.id
+      );
     } catch (err) {
       console.error("Error generating response:", err);
       addMessage("Sorry, I couldn't process that message.", "system");
@@ -129,13 +96,6 @@ const Index = () => {
       setIsLoading(false);
     }
   };
-
-  const messageTemplates = [
-    "Show me a React component example",
-    "Write a JavaScript function for API calls",
-    "How do I use useEffect in React?",
-    "Explain closures in JavaScript",
-  ];
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-dark-500">
@@ -145,14 +105,14 @@ const Index = () => {
        md:sticky md:top-0 h-auto overflow-y-auto"
       >
         <h2 className="text-lg font-bold mb-4 text-center">
-          Select who you'd like OR both
+          Select who you'd like
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
           {personas.map((persona) => (
             <PersonaCard
               key={persona.id}
               persona={persona}
-              isSelected={activePersonas.some((p) => p.id === persona.id)}
+              isSelected={activePersona?.id === persona.id}
               onClick={() => handlePersonaSelect(persona)}
             />
           ))}
@@ -162,16 +122,12 @@ const Index = () => {
       {/* Right Panel - Chat */}
       <div className="flex-1 flex flex-col">
         <ChatHeader
-          activePersonas={activePersonas}
+          activePersonas={activePersona ? [activePersona] : []}
           isSelectionView={false}
-          onBackClick={() => {
-            setMessages([]);
-            setActivePersonas([]);
-          }}
         />
 
         {/* If no persona selected, show prompt */}
-        {activePersonas.length === 0 ? (
+        {!activePersona ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-400 p-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -215,10 +171,16 @@ const Index = () => {
                 ))}
 
                 {isLoading && (
-                  <div className="ai-message animate-pulse flex items-center space-x-1 bg-dark-100 px-3 py-2 rounded-2xl border border-orange-500 max-w-max">
-                    <div className="h-1 w-1 bg-orange-500 rounded-full"></div>
-                    <div className="h-1 w-1 bg-orange-500 rounded-full"></div>
-                    <div className="h-1 w-1 bg-orange-500 rounded-full"></div>
+                  <div
+                    className="ai-message animate-pulse flex items-center space-x-1
+                   bg-orange-500/20 px-3 py-2 rounded-2xl  max-w-max"
+                  >
+                    <div className="h-1 w-1 bg-orange-400 rounded-full"></div>
+                    <div className="h-1 w-1 bg-orange-400 rounded-full"></div>
+                    <div className="h-1 w-1 bg-orange-400 rounded-full"></div>
+                    <span className="text-orange-500 text-sm font-medium ml-10">
+                      {activePersona.name}
+                    </span>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
@@ -226,85 +188,78 @@ const Index = () => {
             </ScrollArea>
 
             {/* Input Box */}
-            {activePersonas.length > 0 && (
-              <div
-                className="flex gap-2 sticky bottom-0 z-10 border-b border-dark-100 bg-dark-400/80 
+            <div
+              className="flex gap-2 sticky bottom-0 z-10 border-b border-dark-100 bg-dark-400/80
               backdrop-blur-md p-4"
-              >
-                <span className="absolute bottom-[4rem] right-30 text-xs text-muted-foreground">
-                  {inputMessage.length}/1000
-                </span>
-                <Input
-                  placeholder="Type your message..."
-                  value={inputMessage}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value.length <= 1000) {
-                      setInputMessage(value);
-                    }
-                  }}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && !e.shiftKey && handleSendMessage()
+            >
+              <span className="absolute bottom-[4rem] right-30 text-xs text-muted-foreground">
+                {inputMessage.length}/1000
+              </span>
+              <Input
+                placeholder="Type your message..."
+                value={inputMessage}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 1000) {
+                    setInputMessage(value);
                   }
-                  className="bg-dark-100 border-dark-50 rounded-full"
-                />
+                }}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && !e.shiftKey && handleSendMessage()
+                }
+                className="bg-dark-100 border-dark-50 rounded-full"
+              />
 
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="bg-dark-100 border-dark-50 hover:bg-orange-500/20 rounded-full"
-                    >
-                      <Settings className="h-4 w-4 text-orange-500" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 border-dark-100 bg-dark-400/80 backdrop-blur-md">
-                    <div className="space-y-4">
-                      <h3 className="font-medium text-orange-500">
-                        Personality Tone
-                      </h3>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="bg-dark-100 border-dark-50 hover:bg-orange-500/20 rounded-full"
+                  >
+                    <Settings className="h-4 w-4 text-orange-500" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 border-dark-100 bg-dark-400/80 backdrop-blur-md">
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-orange-500">
+                      Personality Tone
+                    </h3>
 
-                      <div className="space-y-2">
-                        <div className="grid grid-cols-2 gap-2">
-                          {(
-                            [
-                              "default",
-                              "funny",
-                              "advice",
-                              "educational",
-                            ] as const
-                          ).map((tone) => (
-                            <Button
-                              key={tone}
-                              variant={
-                                personalityTone === tone ? "default" : "outline"
-                              }
-                              className={
-                                personalityTone === tone
-                                  ? "bg-orange-500 hover:bg-orange-600"
-                                  : "bg-dark-100 hover:bg-orange-500/20 border border-orange-600"
-                              }
-                              onClick={() => setPersonalityTone(tone)}
-                            >
-                              {tone.charAt(0).toUpperCase() + tone.slice(1)}
-                            </Button>
-                          ))}
-                        </div>
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        {(
+                          ["default", "funny", "advice", "educational"] as const
+                        ).map((tone) => (
+                          <Button
+                            key={tone}
+                            variant={
+                              personalityTone === tone ? "default" : "outline"
+                            }
+                            className={
+                              personalityTone === tone
+                                ? "bg-orange-500 hover:bg-orange-600"
+                                : "bg-dark-100 hover:bg-orange-500/20 border border-orange-600"
+                            }
+                            onClick={() => setPersonalityTone(tone)}
+                          >
+                            {tone.charAt(0).toUpperCase() + tone.slice(1)}
+                          </Button>
+                        ))}
                       </div>
                     </div>
-                  </PopoverContent>
-                </Popover>
+                  </div>
+                </PopoverContent>
+              </Popover>
 
-                <Button
-                  className="bg-orange-500 hover:bg-orange-600 rounded-full"
-                  onClick={handleSendMessage}
-                  disabled={isLoading || !inputMessage.trim()}
-                >
-                  <Send className="h-2 w-2 " /> Send
-                </Button>
-              </div>
-            )}
+              <Button
+                className="bg-orange-500 hover:bg-orange-600 rounded-full"
+                onClick={handleSendMessage}
+                disabled={isLoading || !inputMessage.trim()}
+              >
+                <Send className="h-2 w-2 " /> Send
+              </Button>
+            </div>
           </>
         )}
       </div>
